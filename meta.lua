@@ -1,5 +1,6 @@
 meta = {
-  id            = "enemy_mod_drone_printer",
+  id            = "Enemy_Drone_Printer",
   save_version  = 100,
-  save_agnostic = false,  
+  save_agnostic = false,
+  workshop_id   = 3020325684,
 }
