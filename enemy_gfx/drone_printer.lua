@@ -1,3 +1,10 @@
+register_gfx_blueprint "drone_bump"
+{
+	weapon_fx = {
+    },
+	equip = {},
+}
+
 register_gfx_blueprint "printed_drone"
 {
 	blueprint = "drone_base",

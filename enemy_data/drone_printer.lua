@@ -1,9 +1,46 @@
+function drone_print(self, print_max, print_delay)
+	local max_print = print_max
+	if world:get_level():is_visible( world:get_position( self ) ) then
+		max_print = self.data.print_max
+	end
+	if self.data.print_count < max_print and self.flags.data[ EF_IFF ] == false then
+		if self.data.print_delay < print_delay then
+			self.data.print_delay = self.data.print_delay + 1
+			return
+		end
+		self.data.print_delay = 0
+		world:play_sound( "armor_shard", self )
+		local ar = area.around(world:get_position( self ), 1 )
+		ar:clamp( world:get_level():get_area() )
+		local c = generator.random_safe_spawn_coord( world:get_level(), ar, world:get_position( self ), 1 )
+		local s = world:get_level():add_entity( self.data.print_id, c, nil )
+		s.data.parent = self					
+		self.data.print_count = self.data.print_count + 1
+	end		
+end
+
+register_blueprint "drone_bump"
+{
+	weapon = {
+		group       = "melee",
+		type        = "melee",
+		natural     = true,
+		damage_type = "impact",
+		fire_sound  = "blunt_swing",
+		hit_sound   = "blunt",
+	},
+	attributes = {		
+		damage   = 10,
+		accuracy = 0,
+	},
+}
+
 register_blueprint "printed_drone"
 {
 	blueprint = "drone_base",
 	lists = {
 		group = "being",
-		{ keywords = {"drone", "robotic", "civilian" } },
+		{ keywords = { "drone", "robotic", "civilian" } },
 	},
 	text = {
 		name      = "printed security drone",
@@ -33,6 +70,17 @@ register_blueprint "printed_drone"
 				self.data.parent.data.print_count = self.data.parent.data.print_count - 1
 			end
 		]=],
+		on_activate = [=[
+			function( self, who, level, param )
+				if who == world:get_player() then
+					world:play_sound( "ui_terminal_accept", self )
+					ui:activate_terminal( who, self, uitk.hack_activate_params( self ) )
+					return 0
+				else 
+					return 0
+				end
+			end
+		]=],
 	},
 	attributes = {
 		experience_value = 0,
@@ -46,7 +94,7 @@ register_blueprint "printed_combat_drone"
 	blueprint = "drone_base",
 	lists = {
 		group = "being",
-		{ keywords = {"drone", "robotic", "civilian" } },
+		{ keywords = { "drone", "robotic", "civilian" } },
 	},
 	text = {
 		name      = "printed combat drone",
@@ -93,7 +141,7 @@ register_blueprint "printed_military_drone"
 	blueprint = "drone_base",
 	lists = {
 		group = "being",
-		{ keywords = {"drone", "robotic", "civilian" } },
+		{ keywords = { "drone", "robotic", "civilian" } },
 	},
 	text = {
 		name      = "printed military drone",
@@ -159,7 +207,7 @@ register_blueprint "drone_printer"
 		group = "being",
 		{  keywords = { "callisto", "bot", "robotic", "civilian" }, weight = 50, dmin = 5, dmax = 19, },		
 	},
-	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, },
+	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
     text = {
 		name      = "drone printer",
 		namep     = "drone printers",
@@ -179,7 +227,8 @@ register_blueprint "drone_printer"
 			alert     = 1,
 			group     = "security",
 			state     = "idle",
-            range     = 6,            
+			melee     = 1,
+			cover     = true,
 		},
 		print_id = "printed_drone",
 		print_count = 0,
@@ -188,7 +237,9 @@ register_blueprint "drone_printer"
 	},
     attributes = {
 		evasion = -20,
+		accuracy         = -30,
 		speed            = 0.9,
+		damage_mult      = 0.5,
         health           = 90,
         experience_value = 50,
 		resist = {
@@ -199,7 +250,8 @@ register_blueprint "drone_printer"
     inventory = {},
     callbacks = {    
 		on_create = [=[
-			function( self )				
+			function( self )
+				self:attach( "drone_bump" )		
 				local hack    = self:attach( "terminal_bot_hack" )
 				hack.attributes.tool_cost = 10
 				local disable = self:attach( "terminal_bot_disable" )
@@ -216,20 +268,7 @@ register_blueprint "drone_printer"
 		on_action   = [=[
             function( self )
                 aitk.standard_ai( self )
-				if self.data.print_count < self.data.print_max then
-					if self.data.print_delay < 3 then
-						self.data.print_delay = self.data.print_delay + 1
-						return
-					end
-					self.data.print_delay = 0
-					world:play_sound( "armor_shard", self )
-					local ar = area.around(world:get_position( self ), 1 )
-					ar:clamp( world:get_level():get_area() )
-					local c = generator.random_safe_spawn_coord( world:get_level(), ar, world:get_position( self ), 1 )
-					local s = world:get_level():add_entity(self.data.print_id, c, nil )
-					s.data.parent = self					
-					self.data.print_count = self.data.print_count + 1
-				end											
+				drone_print( self, 3, 3 )							
             end
         ]=],
 		on_noise    = "aitk.on_noise",
@@ -260,9 +299,9 @@ register_blueprint "combat_drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
-		{  keywords = {  "europa", "bot", "robotic", "civilian" }, weight = 50, dmin = 12, dmax = 38, },		
+		{  keywords = { "europa", "bot", "robotic", "civilian" }, weight = 50, dmin = 12, dmax = 38, },		
 	},
-	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, },
+	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
     text = {
 		name      = "combat drone printer",
 		namep     = "combat drone printers",
@@ -282,7 +321,8 @@ register_blueprint "combat_drone_printer"
 			alert     = 1,
 			group     = "security",
 			state     = "idle",
-            range     = 6,            
+			melee     = 1,
+			cover     = true,			    
 		},
 		print_id = "printed_combat_drone",
 		print_count = 0,
@@ -291,6 +331,7 @@ register_blueprint "combat_drone_printer"
 	},
     attributes = {
 		evasion = -20,
+		accuracy         = -20,
 		speed            = 0.9,
         health           = 120,
         experience_value = 75,
@@ -302,13 +343,13 @@ register_blueprint "combat_drone_printer"
     inventory = {},
     callbacks = {    
 		on_create = [=[
-			function( self )				
+			function( self )	
+				self:attach( "drone_bump" )			
 				local hack    = self:attach( "terminal_bot_hack" )
 				hack.attributes.tool_cost = 10
 				local disable = self:attach( "terminal_bot_disable" )
 				disable.attributes.tool_cost = 5
 				self:attach( "terminal_return" )
-				self:attach( "sentry_bot_chaingun" )
 				self:attach( "ammo_762", { stack = { amount = 20 + math.random(5) } } )
 			end
 			]=],		 
@@ -318,22 +359,9 @@ register_blueprint "combat_drone_printer"
             end
         ]=],               		
 		on_action   = [=[
-            function( self )
+			function( self )
                 aitk.standard_ai( self )
-				if self.data.print_count < self.data.print_max then
-					if self.data.print_delay < 3 then
-						self.data.print_delay = self.data.print_delay + 1
-						return
-					end
-					self.data.print_delay = 0
-					world:play_sound( "armor_shard", self )
-					local ar = area.around(world:get_position( self ), 1 )
-					ar:clamp( world:get_level():get_area() )
-					local c = generator.random_safe_spawn_coord( world:get_level(), ar, world:get_position( self ), 1 )
-					local s = world:get_level():add_entity(self.data.print_id, c, nil )
-					s.data.parent = self					
-					self.data.print_count = self.data.print_count + 1
-				end											
+				drone_print(self, 3, 2)
             end
         ]=],
 		on_noise    = "aitk.on_noise",
@@ -366,7 +394,7 @@ register_blueprint "military_drone_printer"
 		group = "being",
 		{  keywords = { "io", "bot", "robotic", "civilian" }, weight = 50, dmin = 16, dmax = 57, },		
 	},
-	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, },
+	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
     text = {
 		name      = "military drone printer",
 		namep     = "military drone printers",
@@ -386,7 +414,8 @@ register_blueprint "military_drone_printer"
 			alert     = 1,
 			group     = "security",
 			state     = "idle",
-            range     = 6,            
+			melee     = 1,
+			cover     = true,		
 		},
 		print_id = "printed_military_drone",
 		print_count = 0,
@@ -394,10 +423,12 @@ register_blueprint "military_drone_printer"
 		print_delay = 0;
 	},
     attributes = {
-		evasion = -20,
+		evasion          = -20,
+		accuracy         = -10,
 		speed            = 0.9,
         health           = 180,
         experience_value = 100,
+		damage_mult      = 1.2,
 		resist = {
 			emp = 30,
 		},
@@ -406,13 +437,13 @@ register_blueprint "military_drone_printer"
     inventory = {},
     callbacks = {    
 		on_create = [=[
-			function( self )				
+			function( self )	
+				self:attach( "drone_bump" )			
 				local hack    = self:attach( "terminal_bot_hack" )
 				hack.attributes.tool_cost = 10
 				local disable = self:attach( "terminal_bot_disable" )
 				disable.attributes.tool_cost = 5
 				self:attach( "terminal_return" )
-				self:attach( "tank_mech_auto" )
 				self:attach( "ammo_762", { stack = { amount = 30 + math.random(5) } } )
 			end
 			]=],		 
@@ -424,20 +455,7 @@ register_blueprint "military_drone_printer"
 		on_action   = [=[
             function( self )
                 aitk.standard_ai( self )
-				if self.data.print_count < self.data.print_max then
-					if self.data.print_delay < 3 then
-						self.data.print_delay = self.data.print_delay + 1
-						return
-					end
-					self.data.print_delay = 0
-					world:play_sound( "armor_shard", self )
-					local ar = area.around(world:get_position( self ), 1 )
-					ar:clamp( world:get_level():get_area() )
-					local c = generator.random_safe_spawn_coord( world:get_level(), ar, world:get_position( self ), 1 )
-					local s = world:get_level():add_entity(self.data.print_id, c, nil )
-					s.data.parent = self					
-					self.data.print_count = self.data.print_count + 1
-				end											
+				drone_print(self, 4, 2)
             end
         ]=],
 		on_noise    = "aitk.on_noise",
