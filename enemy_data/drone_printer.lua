@@ -6,8 +6,8 @@ register_blueprint "printed_drone"
 		{ keywords = {"drone", "robotic", "civilian" } },
 	},
 	text = {
-		name      = "security drone",
-		namep     = "security drones",
+		name      = "printed security drone",
+		namep     = "printed security drones",
 		entry     = "Drone",
 	},
 	data = {
@@ -17,7 +17,7 @@ register_blueprint "printed_drone"
 		on_create = [=[
 		function( self )
 			self:attach( "drone_weapon_1" )		
-			self:attach( "ammo_9mm", { stack = { amount = 1 + math.random(1) } } )		
+			self:attach( "ammo_9mm", { stack = { amount = 1 + math.random(3) } } )		
 			local hack    = self:attach( "terminal_bot_hack" )
 			hack.attributes.tool_cost = 3
 			local disable = self:attach( "terminal_bot_disable" )
@@ -49,8 +49,8 @@ register_blueprint "printed_combat_drone"
 		{ keywords = {"drone", "robotic", "civilian" } },
 	},
 	text = {
-		name      = "combat drone",
-		namep     = "combat drones",
+		name      = "printed combat drone",
+		namep     = "printed combat drones",
 		entry     = "Drone",
 	},
 	data = {
@@ -64,7 +64,7 @@ register_blueprint "printed_combat_drone"
 		on_create = [=[
 		function( self )
 			self:attach( "drone_weapon_2" )
-			self:attach( "ammo_9mm", { stack = { amount = 2 + math.random(1) } } )
+			self:attach( "ammo_9mm", { stack = { amount = 3 + math.random(2) } } )
 			local hack    = self:attach( "terminal_bot_hack" )
 			hack.attributes.tool_cost = 4
 			local disable = self:attach( "terminal_bot_disable" )
@@ -96,8 +96,8 @@ register_blueprint "printed_military_drone"
 		{ keywords = {"drone", "robotic", "civilian" } },
 	},
 	text = {
-		name      = "military drone",
-		namep     = "military drones",
+		name      = "printed military drone",
+		namep     = "printed military drones",
 		entry     = "Drone",
 	},
 	ascii     = {
@@ -111,7 +111,7 @@ register_blueprint "printed_military_drone"
 		on_create = [=[
 		function( self )
 			self:attach( "drone_weapon_3" )	
-			self:attach( "ammo_762", { stack = { amount = 2 + math.random(1) } } )			
+			self:attach( "ammo_762", { stack = { amount = 3 + math.random(2) } } )			
 			local hack    = self:attach( "terminal_bot_hack" )
 			hack.attributes.tool_cost = 5
 			local disable = self:attach( "terminal_bot_disable" )
@@ -161,8 +161,8 @@ register_blueprint "drone_printer"
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, },
     text = {
-		name      = "Drone Printer",
-		namep     = "Drone Printers",
+		name      = "drone printer",
+		namep     = "drone printers",
 	},
 	sound = {
 		idle = "tank_mech_idle",
@@ -183,16 +183,16 @@ register_blueprint "drone_printer"
 		},
 		print_id = "printed_drone",
 		print_count = 0,
-		print_max = 10,
+		print_max = 6,
 		print_delay = 0;
 	},
     attributes = {
 		evasion = -20,
 		speed            = 0.9,
-        health           = 100,
+        health           = 90,
         experience_value = 50,
 		resist = {
-			emp = 25,
+			emp = 10,
 		},
 	},
     state = "open",
@@ -205,6 +205,7 @@ register_blueprint "drone_printer"
 				local disable = self:attach( "terminal_bot_disable" )
 				disable.attributes.tool_cost = 5
 				self:attach( "terminal_return" )
+				self:attach( "ammo_9mm", { stack = { amount = 30 } } )
 			end
 			]=],		 
         on_load = [=[
@@ -263,8 +264,8 @@ register_blueprint "combat_drone_printer"
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, },
     text = {
-		name      = "Combat Drone Printer",
-		namep     = "Combat Drone Printers",
+		name      = "combat drone printer",
+		namep     = "combat drone printers",
 	},
 	sound = {
 		idle = "tank_mech_idle",
@@ -285,16 +286,16 @@ register_blueprint "combat_drone_printer"
 		},
 		print_id = "printed_combat_drone",
 		print_count = 0,
-		print_max = 10,
+		print_max = 8,
 		print_delay = 0;
 	},
     attributes = {
 		evasion = -20,
 		speed            = 0.9,
-        health           = 150,
+        health           = 120,
         experience_value = 75,
 		resist = {
-			emp = 25,
+			emp = 20,
 		},
 	},
     state = "open",
@@ -308,7 +309,7 @@ register_blueprint "combat_drone_printer"
 				disable.attributes.tool_cost = 5
 				self:attach( "terminal_return" )
 				self:attach( "sentry_bot_chaingun" )
-				self:attach( "ammo_762", { stack = { amount = 5 + math.random(5) } } )
+				self:attach( "ammo_762", { stack = { amount = 20 + math.random(5) } } )
 			end
 			]=],		 
         on_load = [=[
@@ -367,8 +368,8 @@ register_blueprint "military_drone_printer"
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, },
     text = {
-		name      = "Military Drone Printer",
-		namep     = "Military Drone Printers",
+		name      = "military drone printer",
+		namep     = "military drone printers",
 	},
 	sound = {
 		idle = "tank_mech_idle",
@@ -395,10 +396,10 @@ register_blueprint "military_drone_printer"
     attributes = {
 		evasion = -20,
 		speed            = 0.9,
-        health           = 200,
+        health           = 180,
         experience_value = 100,
 		resist = {
-			emp = 25,
+			emp = 30,
 		},
 	},
     state = "open",
@@ -412,7 +413,7 @@ register_blueprint "military_drone_printer"
 				disable.attributes.tool_cost = 5
 				self:attach( "terminal_return" )
 				self:attach( "tank_mech_auto" )
-				self:attach( "ammo_762", { stack = { amount = 10 + math.random(5) } } )
+				self:attach( "ammo_762", { stack = { amount = 30 + math.random(5) } } )
 			end
 			]=],		 
         on_load = [=[
