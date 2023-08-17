@@ -35,6 +35,24 @@ register_blueprint "drone_bump"
 	},
 }
 
+register_blueprint "drone_target_laser"
+{
+	attributes = {
+		damage = 0,
+		shots = 1,
+		min_distance = 4,
+		opt_distance = 6,
+		max_distance = 8,
+	},
+	weapon = {
+		natural = true,
+		type = "rail",
+		group = "semi",
+		damage_type = "emp",
+		fire_sound = "energy2_shot",
+	},
+}
+
 register_blueprint "printed_drone"
 {
 	blueprint = "drone_base",
@@ -205,6 +223,7 @@ register_blueprint "drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
+		{  keywords = { "test", }, weight = 50 },	
 		{  keywords = { "callisto", "bot", "robotic", "civilian" }, weight = 50, dmin = 5, dmax = 19, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -228,6 +247,7 @@ register_blueprint "drone_printer"
 			group     = "security",
 			state     = "idle",
 			melee     = 1,
+			range     = 6,
 			cover     = true,
 		},
 		print_id = "printed_drone",
@@ -251,7 +271,8 @@ register_blueprint "drone_printer"
     callbacks = {    
 		on_create = [=[
 			function( self )
-				self:attach( "drone_bump" )		
+				self:attach( "drone_bump" )	
+				self:attach( "drone_target_laser" )
 				local hack    = self:attach( "terminal_bot_hack" )
 				hack.attributes.tool_cost = 10
 				local disable = self:attach( "terminal_bot_disable" )
@@ -299,6 +320,7 @@ register_blueprint "combat_drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
+		{  keywords = { "test", }, weight = 50 },	
 		{  keywords = { "europa", "bot", "robotic", "civilian" }, weight = 50, dmin = 12, dmax = 38, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -322,6 +344,7 @@ register_blueprint "combat_drone_printer"
 			group     = "security",
 			state     = "idle",
 			melee     = 1,
+			range     = 6,
 			cover     = true,			    
 		},
 		print_id = "printed_combat_drone",
@@ -344,7 +367,8 @@ register_blueprint "combat_drone_printer"
     callbacks = {    
 		on_create = [=[
 			function( self )	
-				self:attach( "drone_bump" )			
+				self:attach( "drone_bump" )	
+				self:attach( "drone_target_laser" )
 				local hack    = self:attach( "terminal_bot_hack" )
 				hack.attributes.tool_cost = 10
 				local disable = self:attach( "terminal_bot_disable" )
@@ -392,6 +416,7 @@ register_blueprint "military_drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
+		{  keywords = { "test", }, weight = 50 },	
 		{  keywords = { "io", "bot", "robotic", "civilian" }, weight = 50, dmin = 16, dmax = 57, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -415,6 +440,7 @@ register_blueprint "military_drone_printer"
 			group     = "security",
 			state     = "idle",
 			melee     = 1,
+			range     = 6,
 			cover     = true,		
 		},
 		print_id = "printed_military_drone",
@@ -438,7 +464,8 @@ register_blueprint "military_drone_printer"
     callbacks = {    
 		on_create = [=[
 			function( self )	
-				self:attach( "drone_bump" )			
+				self:attach( "drone_bump" )	
+				self:attach( "drone_target_laser" )				
 				local hack    = self:attach( "terminal_bot_hack" )
 				hack.attributes.tool_cost = 10
 				local disable = self:attach( "terminal_bot_disable" )

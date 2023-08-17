@@ -1,8 +1,41 @@
 register_gfx_blueprint "drone_bump"
 {
 	weapon_fx = {
+		advance   = 0.5,
     },
 	equip = {},
+}
+
+register_gfx_blueprint "fx_on_shot_drone_printer_lazer"
+{	
+	fx = {
+		tag  = "muzzle",
+	},
+	lifetime = {
+		duration = 2.0,
+	},
+	sprite = {
+		material = "data/texture/fx/beam_test/beam_railgun",
+		size     = vec2( 0.1, 0.1 ),
+		beam     = "segmented",
+	},
+	target = {
+		offset   = vec3( 0.0, 1.0, 0.0 ),
+	},
+	fade = {
+		fade_in  = 0.2,
+		fade_out = 0.1,
+		easing   = EASING_SINE,
+	},
+}
+
+register_gfx_blueprint "drone_target_laser"
+{
+	weapon_fx = {
+		on_fire    = "fx_on_fire_railgun",
+		on_shot    = "fx_on_shot_drone_printer_lazer",
+		velocity   = 50.0,
+    },
 }
 
 register_gfx_blueprint "printed_drone"
