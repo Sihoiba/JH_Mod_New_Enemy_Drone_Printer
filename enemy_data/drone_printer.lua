@@ -35,10 +35,32 @@ register_blueprint "drone_bump"
 	},
 }
 
+register_blueprint "buff_targeted"
+{
+	flags = { EF_NOPICKUP }, 
+	text = {
+		name    = "Target Painted",
+		desc    = "Reduces dodge by 5%",
+	},
+	callbacks = {
+		on_die = [[
+			function ( self )
+				world:mark_destroy( self )
+			end
+		]],
+	},
+	attributes = {
+		dodge_value = -5,
+	},
+	ui_buff = {
+		color = LIGHTRED,
+	},
+}
+
 register_blueprint "drone_target_laser"
 {
 	attributes = {
-		damage = 0,
+		damage = 10,
 		shots = 1,
 		min_distance = 4,
 		opt_distance = 6,
@@ -50,6 +72,15 @@ register_blueprint "drone_target_laser"
 		group = "semi",
 		damage_type = "emp",
 		fire_sound = "energy2_shot",
+	},
+	callbacks = {
+		on_damage = [[
+			function ( weapon, who, amount, source )
+				if who and who.data and who.data.is_player then
+					world:add_buff( who, "buff_targeted", 200 )
+				end
+			end
+		]],
 	},
 }
 
@@ -223,7 +254,7 @@ register_blueprint "drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
-		{  keywords = { "test", }, weight = 50 },	
+		{ keywords = { "test" }, weight = 150 },
 		{  keywords = { "callisto", "bot", "robotic", "civilian" }, weight = 50, dmin = 5, dmax = 19, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -257,7 +288,7 @@ register_blueprint "drone_printer"
 	},
     attributes = {
 		evasion = -20,
-		accuracy         = -30,
+		accuracy         = 0,
 		speed            = 0.9,
 		damage_mult      = 0.5,
         health           = 90,
@@ -320,7 +351,6 @@ register_blueprint "combat_drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
-		{  keywords = { "test", }, weight = 50 },	
 		{  keywords = { "europa", "bot", "robotic", "civilian" }, weight = 50, dmin = 12, dmax = 38, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -354,7 +384,7 @@ register_blueprint "combat_drone_printer"
 	},
     attributes = {
 		evasion = -20,
-		accuracy         = -20,
+		accuracy         = 0,
 		speed            = 0.9,
         health           = 120,
         experience_value = 75,
@@ -415,8 +445,7 @@ register_blueprint "military_drone_printer"
 {
 	blueprint = "bot",
 	lists = {
-		group = "being",
-		{  keywords = { "test", }, weight = 50 },	
+		group = "being",	
 		{  keywords = { "io", "bot", "robotic", "civilian" }, weight = 50, dmin = 16, dmax = 57, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -450,7 +479,7 @@ register_blueprint "military_drone_printer"
 	},
     attributes = {
 		evasion          = -20,
-		accuracy         = -10,
+		accuracy         = 0,
 		speed            = 0.9,
         health           = 180,
         experience_value = 100,
