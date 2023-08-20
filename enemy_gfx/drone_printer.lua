@@ -38,6 +38,24 @@ register_gfx_blueprint "drone_target_laser"
     },
 }
 
+register_gfx_blueprint "drone_target_laser2"
+{
+	weapon_fx = {
+		on_fire    = "fx_on_fire_railgun",
+		on_shot    = "fx_on_shot_drone_printer_lazer",
+		velocity   = 50.0,
+    },
+}
+
+register_gfx_blueprint "drone_target_laser3"
+{
+	weapon_fx = {
+		on_fire    = "fx_on_fire_railgun",
+		on_shot    = "fx_on_shot_drone_printer_lazer",
+		velocity   = 50.0,
+    },
+}
+
 register_gfx_blueprint "printed_drone"
 {
 	blueprint = "drone_base",

@@ -40,7 +40,7 @@ register_blueprint "buff_targeted"
 	flags = { EF_NOPICKUP }, 
 	text = {
 		name    = "Target Painted",
-		desc    = "Reduces dodge by 5%",
+		desc    = "Reduces dodge by 10%",
 	},
 	callbacks = {
 		on_die = [[
@@ -50,7 +50,51 @@ register_blueprint "buff_targeted"
 		]],
 	},
 	attributes = {
-		dodge_value = -5,
+		dodge_value = -10,
+	},
+	ui_buff = {
+		color = LIGHTRED,
+	},
+}
+
+register_blueprint "buff_targeted2"
+{
+	flags = { EF_NOPICKUP }, 
+	text = {
+		name    = "Target Painted",
+		desc    = "Reduces dodge by 15%",
+	},
+	callbacks = {
+		on_die = [[
+			function ( self )
+				world:mark_destroy( self )
+			end
+		]],
+	},
+	attributes = {
+		dodge_value = -15,
+	},
+	ui_buff = {
+		color = LIGHTRED,
+	},
+}
+
+register_blueprint "buff_targeted3"
+{
+	flags = { EF_NOPICKUP }, 
+	text = {
+		name    = "Target Painted",
+		desc    = "Reduces dodge by 20%",
+	},
+	callbacks = {
+		on_die = [[
+			function ( self )
+				world:mark_destroy( self )
+			end
+		]],
+	},
+	attributes = {
+		dodge_value = -20,
 	},
 	ui_buff = {
 		color = LIGHTRED,
@@ -78,6 +122,60 @@ register_blueprint "drone_target_laser"
 			function ( weapon, who, amount, source )
 				if who and who.data and who.data.is_player then
 					world:add_buff( who, "buff_targeted", 200 )
+				end
+			end
+		]],
+	},
+}
+
+register_blueprint "drone_target_laser2"
+{
+	attributes = {
+		damage = 10,
+		shots = 1,
+		min_distance = 4,
+		opt_distance = 6,
+		max_distance = 8,
+	},
+	weapon = {
+		natural = true,
+		type = "rail",
+		group = "semi",
+		damage_type = "emp",
+		fire_sound = "energy2_shot",
+	},
+	callbacks = {
+		on_damage = [[
+			function ( weapon, who, amount, source )
+				if who and who.data and who.data.is_player then
+					world:add_buff( who, "buff_targeted2", 200 )
+				end
+			end
+		]],
+	},
+}
+
+register_blueprint "drone_target_laser3"
+{
+	attributes = {
+		damage = 10,
+		shots = 1,
+		min_distance = 4,
+		opt_distance = 6,
+		max_distance = 8,
+	},
+	weapon = {
+		natural = true,
+		type = "rail",
+		group = "semi",
+		damage_type = "emp",
+		fire_sound = "energy2_shot",
+	},
+	callbacks = {
+		on_damage = [[
+			function ( weapon, who, amount, source )
+				if who and who.data and who.data.is_player then
+					world:add_buff( who, "buff_targeted3", 200 )
 				end
 			end
 		]],
@@ -254,7 +352,7 @@ register_blueprint "drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
-		{ keywords = { "test" }, weight = 150 },
+		-- { keywords = { "test" }, weight = 150 },
 		{  keywords = { "callisto", "bot", "robotic", "civilian" }, weight = 50, dmin = 5, dmax = 19, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -351,6 +449,7 @@ register_blueprint "combat_drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
+		-- { keywords = { "test" }, weight = 150 },
 		{  keywords = { "europa", "bot", "robotic", "civilian" }, weight = 50, dmin = 12, dmax = 38, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -398,7 +497,7 @@ register_blueprint "combat_drone_printer"
 		on_create = [=[
 			function( self )	
 				self:attach( "drone_bump" )	
-				self:attach( "drone_target_laser" )
+				self:attach( "drone_target_laser2" )
 				local hack    = self:attach( "terminal_bot_hack" )
 				hack.attributes.tool_cost = 10
 				local disable = self:attach( "terminal_bot_disable" )
@@ -446,6 +545,7 @@ register_blueprint "military_drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",	
+		{ keywords = { "test" }, weight = 150 },
 		{  keywords = { "io", "bot", "robotic", "civilian" }, weight = 50, dmin = 16, dmax = 57, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -494,7 +594,7 @@ register_blueprint "military_drone_printer"
 		on_create = [=[
 			function( self )	
 				self:attach( "drone_bump" )	
-				self:attach( "drone_target_laser" )				
+				self:attach( "drone_target_laser3" )				
 				local hack    = self:attach( "terminal_bot_hack" )
 				hack.attributes.tool_cost = 10
 				local disable = self:attach( "terminal_bot_disable" )
