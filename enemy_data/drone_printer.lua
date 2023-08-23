@@ -1,21 +1,42 @@
 function drone_print(self, print_max, print_delay)
 	local max_print = print_max
+	if self.data.disabled then
+		nova.log(tostring(self).." is disabled")
+		return
+	end	
+	if self:child("disabled" ) then
+		nova.log(tostring(self).." has disabled emp buff")
+		return
+	end
+	nova.log(tostring(self).." is not disabled")
 	if world:get_level():is_visible( world:get_position( self ) ) then
+		nova.log(tostring(self).." is printing out of view")
 		max_print = self.data.print_max
 	end
-	if self.data.print_count < max_print and self.flags.data[ EF_IFF ] == false then
+	if self.flags.data[ EF_IFF ] == true then
+		max_print = 3
+	end
+	if self.data.print_count < max_print then
 		if self.data.print_delay < print_delay then
+			nova.log(tostring(self).." is delaying printing count "..tostring(self.data.print_delay))
 			self.data.print_delay = self.data.print_delay + 1
 			return
 		end
+		nova.log(tostring(self).." is stopped delaying at count "..tostring(self.data.print_delay))
 		self.data.print_delay = 0
 		world:play_sound( "armor_shard", self )
+		nova.log(tostring(self).." is getting area to print drone")
 		local ar = area.around(world:get_position( self ), 1 )
 		ar:clamp( world:get_level():get_area() )
+		nova.log(tostring(self).." is getting spawn coord to print drone")
 		local c = generator.random_safe_spawn_coord( world:get_level(), ar, world:get_position( self ), 1 )
+		nova.log(tostring(self).." got spawn coord x:"..tostring(c.x)..", y:"..tostring(c.y))
 		local s = world:get_level():add_entity( self.data.print_id, c, nil )
-		s.data.parent = self					
-		self.data.print_count = self.data.print_count + 1
+		s.data.parent = self
+		if self.flags.data[ EF_IFF ] == true then
+			aitk.convert( s, world:get_player() )
+		end	
+		self.data.print_count = self.data.print_count + 1		
 	end		
 end
 
@@ -352,7 +373,7 @@ register_blueprint "drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
-		-- { keywords = { "test" }, weight = 150 },
+		{ keywords = { "test" }, weight = 150 },
 		{  keywords = { "callisto", "bot", "robotic", "civilian" }, weight = 50, dmin = 5, dmax = 19, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -403,7 +424,7 @@ register_blueprint "drone_printer"
 				self:attach( "drone_bump" )	
 				self:attach( "drone_target_laser" )
 				local hack    = self:attach( "terminal_bot_hack" )
-				hack.attributes.tool_cost = 10
+				hack.attributes.tool_cost = 7
 				local disable = self:attach( "terminal_bot_disable" )
 				disable.attributes.tool_cost = 5
 				self:attach( "terminal_return" )
@@ -418,6 +439,7 @@ register_blueprint "drone_printer"
 		on_action   = [=[
             function( self )
                 aitk.standard_ai( self )
+				nova.log( tostring(self).."is printing drone "..tostring(self.data.print_count).." of "..tostring(self.data.print_max) )
 				drone_print( self, 3, 3 )							
             end
         ]=],
@@ -499,7 +521,7 @@ register_blueprint "combat_drone_printer"
 				self:attach( "drone_bump" )	
 				self:attach( "drone_target_laser2" )
 				local hack    = self:attach( "terminal_bot_hack" )
-				hack.attributes.tool_cost = 10
+				hack.attributes.tool_cost = 7
 				local disable = self:attach( "terminal_bot_disable" )
 				disable.attributes.tool_cost = 5
 				self:attach( "terminal_return" )
@@ -514,6 +536,7 @@ register_blueprint "combat_drone_printer"
 		on_action   = [=[
 			function( self )
                 aitk.standard_ai( self )
+				nova.log( tostring(self).."is printing drone "..tostring(self.data.print_count).." of "..tostring(self.data.print_max) )
 				drone_print(self, 3, 2)
             end
         ]=],
@@ -545,7 +568,7 @@ register_blueprint "military_drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",	
-		{ keywords = { "test" }, weight = 150 },
+		-- { keywords = { "test" }, weight = 150 },
 		{  keywords = { "io", "bot", "robotic", "civilian" }, weight = 50, dmin = 16, dmax = 57, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -596,9 +619,9 @@ register_blueprint "military_drone_printer"
 				self:attach( "drone_bump" )	
 				self:attach( "drone_target_laser3" )				
 				local hack    = self:attach( "terminal_bot_hack" )
-				hack.attributes.tool_cost = 10
+				hack.attributes.tool_cost = 8
 				local disable = self:attach( "terminal_bot_disable" )
-				disable.attributes.tool_cost = 5
+				disable.attributes.tool_cost = 6
 				self:attach( "terminal_return" )
 				self:attach( "ammo_762", { stack = { amount = 30 + math.random(5) } } )
 			end
@@ -611,6 +634,7 @@ register_blueprint "military_drone_printer"
 		on_action   = [=[
             function( self )
                 aitk.standard_ai( self )
+				nova.log( tostring(self).."is printing drone "..tostring(self.data.print_count).." of "..tostring(self.data.print_max) )
 				drone_print(self, 4, 2)
             end
         ]=],
