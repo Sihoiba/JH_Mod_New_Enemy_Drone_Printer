@@ -1,16 +1,64 @@
+function safe_spawn_coord_spiral_out( self, start_coord, max_range )
+	local max_range = max_range or 6
+	
+	local floor_id = self:get_nid( "floor" )
+	local function can_spawn( p, c )
+		if self:raw_get_cell( c ) ~= floor_id then return false end
+		if self:get_cell_flags( c )[ EF_NOSPAWN ] then return false end
+		if not p then return true end
+
+		local pc = p - c
+		if pc.x < 0 then pc.x = -pc.x end
+		if pc.y < 0 then pc.y = -pc.y end
+		return pc.x <= max_range or pc.y <= max_range
+	end
+	
+	local function spiral_get_values(range)
+		local cx = 0
+		local cy = 0
+		local d = 1
+		local m = 1
+		local spiral_coords = {}
+		while cx <= range and cy <= range do
+			while (2 * cx * d) < m do
+				table.insert(spiral_coords, {x=cx, y=cy})
+				cx = cx + d
+			end
+			while (2 * cy * d) < m do
+				table.insert(spiral_coords, {x=cx, y=cy})
+				cy = cy + d
+			end
+			d = -1 * d
+			m = m + 1			
+		end
+		return spiral_coords
+	end
+	
+	local p = start_coord
+	if can_spawn( p, p ) then
+		return p
+	end
+	
+	local spawn_coords = spiral_get_values(max_range)
+	for k,v in ipairs(spawn_coords) do
+		p.x = start_coord.x + v.x
+		p.y = start_coord.y + v.y
+		nova.log("Checking "..tostring(p.x)..","..tostring(p.y))
+		if can_spawn( start_coord, p ) then
+			return p
+		end
+	end
+end
+
 function drone_print(self, print_max, print_delay)
 	local max_print = print_max
 	if self.data.disabled then
-		nova.log(tostring(self).." is disabled")
 		return
 	end	
 	if self:child("disabled" ) then
-		nova.log(tostring(self).." has disabled emp buff")
 		return
 	end
-	nova.log(tostring(self).." is not disabled")
 	if world:get_level():is_visible( world:get_position( self ) ) then
-		nova.log(tostring(self).." is printing out of view")
 		max_print = self.data.print_max
 	end
 	if self.flags.data[ EF_IFF ] == true then
@@ -18,25 +66,23 @@ function drone_print(self, print_max, print_delay)
 	end
 	if self.data.print_count < max_print then
 		if self.data.print_delay < print_delay then
-			nova.log(tostring(self).." is delaying printing count "..tostring(self.data.print_delay))
 			self.data.print_delay = self.data.print_delay + 1
 			return
 		end
-		nova.log(tostring(self).." is stopped delaying at count "..tostring(self.data.print_delay))
 		self.data.print_delay = 0
-		world:play_sound( "armor_shard", self )
-		nova.log(tostring(self).." is getting area to print drone")
-		local ar = area.around(world:get_position( self ), 1 )
-		ar:clamp( world:get_level():get_area() )
-		nova.log(tostring(self).." is getting spawn coord to print drone")
-		local c = generator.random_safe_spawn_coord( world:get_level(), ar, world:get_position( self ), 1 )
-		nova.log(tostring(self).." got spawn coord x:"..tostring(c.x)..", y:"..tostring(c.y))
-		local s = world:get_level():add_entity( self.data.print_id, c, nil )
-		s.data.parent = self
-		if self.flags.data[ EF_IFF ] == true then
-			aitk.convert( s, world:get_player() )
-		end	
-		self.data.print_count = self.data.print_count + 1		
+		world:play_sound( "armor_shard", self )		
+		local c = safe_spawn_coord_spiral_out( world:get_level(), world:get_position( self ), 1 )
+		if c then
+			nova.log(tostring(self).." got spawn coord x:"..tostring(c.x)..", y:"..tostring(c.y))		
+			local s = world:get_level():add_entity( self.data.print_id, c, nil )
+			s.data.parent = self
+			if self.flags.data[ EF_IFF ] == true then
+				aitk.convert( s, world:get_player() )
+			end	
+			self.data.print_count = self.data.print_count + 1		
+		else 
+			nova.log(tostring(self).." no where safe to spawn")
+		end
 	end		
 end
 
@@ -439,7 +485,7 @@ register_blueprint "drone_printer"
 		on_action   = [=[
             function( self )
                 aitk.standard_ai( self )
-				nova.log( tostring(self).."is printing drone "..tostring(self.data.print_count).." of "..tostring(self.data.print_max) )
+				nova.log( tostring(self).."is trying to print drone "..tostring(self.data.print_count).." of "..tostring(self.data.print_max) )
 				drone_print( self, 3, 3 )							
             end
         ]=],
