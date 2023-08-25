@@ -5,6 +5,8 @@ function safe_spawn_coord_spiral_out( self, start_coord, max_range )
 	local function can_spawn( p, c )
 		if self:raw_get_cell( c ) ~= floor_id then return false end
 		if self:get_cell_flags( c )[ EF_NOSPAWN ] then return false end
+		if self:get_cell_flags( c )[ EF_NOMOVE ] then return false end
+		local being = world:get_level():get_being( c )		
 		if not p then return true end
 
 		local pc = p - c
@@ -419,7 +421,7 @@ register_blueprint "drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
-		{ keywords = { "test" }, weight = 150 },
+		-- { keywords = { "test" }, weight = 150 },
 		{  keywords = { "callisto", "bot", "robotic", "civilian" }, weight = 50, dmin = 5, dmax = 19, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -517,7 +519,7 @@ register_blueprint "combat_drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
-		-- { keywords = { "test" }, weight = 150 },
+		{ keywords = { "test" }, weight = 150 },
 		{  keywords = { "europa", "bot", "robotic", "civilian" }, weight = 50, dmin = 12, dmax = 38, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
