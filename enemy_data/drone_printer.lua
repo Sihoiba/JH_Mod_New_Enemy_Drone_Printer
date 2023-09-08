@@ -12,6 +12,9 @@ function safe_spawn_coord_spiral_out( self, start_coord, max_range )
 			if e.flags and e.flags.data and e.flags.data [ EF_NOMOVE ] then 
 				return false 
 			end
+			if e.data and e.data.is_player then 
+				return false 
+			end
 		end
 		if not p then return true end
 
@@ -427,7 +430,7 @@ register_blueprint "drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
-		-- { keywords = { "test" }, weight = 150 },
+		{ keywords = { "test2" }, weight = 150 },
 		{  keywords = { "callisto", "bot", "robotic", "civilian" }, weight = 50, dmin = 5, dmax = 19, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -525,7 +528,7 @@ register_blueprint "combat_drone_printer"
 	blueprint = "bot",
 	lists = {
 		group = "being",
-		{ keywords = { "test" }, weight = 150 },
+		{ keywords = { "test2" }, weight = 150 },
 		{  keywords = { "europa", "bot", "robotic", "civilian" }, weight = 50, dmin = 12, dmax = 38, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -623,7 +626,7 @@ register_blueprint "military_drone_printer"
 	lists = {
 		group = "being",	
 		-- { keywords = { "test" }, weight = 150 },
-		{  keywords = { "io", "bot", "robotic", "civilian" }, weight = 50, dmin = 16, dmax = 57, },		
+		{  keywords = { "io", "beyond", "bot", "robotic", "civilian" }, weight = 50, dmin = 16, dmax = 57, },		
 	},
 	flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
     text = {
