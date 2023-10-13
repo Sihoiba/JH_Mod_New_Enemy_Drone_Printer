@@ -439,9 +439,9 @@ register_blueprint "drone_printer"
 		namep     = "drone printers",
 	},
 	sound = {
-		idle = "tank_mech_idle",
-		step = "tank_mech_step",
-		die  = "tank_mech_die",
+		idle = "drone_printer_idle",
+		step = "drone_printer_step",
+		die  = "drone_printer_die",
 	},
     ascii     = {
 		glyph     = "P",
@@ -537,9 +537,9 @@ register_blueprint "combat_drone_printer"
 		namep     = "combat drone printers",
 	},
 	sound = {
-		idle = "tank_mech_idle",
-		step = "tank_mech_step",
-		die  = "tank_mech_die",
+		idle = "drone_printer_idle",
+		step = "drone_printer_step",
+		die  = "drone_printer_die",
 	},
     ascii     = {
 		glyph     = "P",
@@ -634,9 +634,9 @@ register_blueprint "military_drone_printer"
 		namep     = "military drone printers",
 	},
 	sound = {
-		idle = "tank_mech_idle",
-		step = "tank_mech_step",
-		die  = "tank_mech_die",
+		idle = "drone_printer_idle",
+		step = "drone_printer_step",
+		die  = "drone_printer_die",
 	},
     ascii     = {
 		glyph     = "P",
