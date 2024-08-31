@@ -206,12 +206,12 @@ register_gfx_blueprint "military_drone_printer"
         no_rotate = true,
     },
     scale = {
-        scale = 0.55
+        scale = 0.6
     },
     {
         scene = {},
 		scale = {
-			scale = 0.55
+			scale = 0.6
 		},
         render = {
             mesh        = "data/model/tank_mech_01.nmd:tank_mech_body_01",
@@ -220,7 +220,7 @@ register_gfx_blueprint "military_drone_printer"
         {
             scene = {},
 			scale = {
-				scale = 0.55
+				scale = 0.6
 			},
             render = {
                 mesh        = "data/model/tank_mech_01.nmd:tank_mech_body_01#01",
@@ -230,7 +230,7 @@ register_gfx_blueprint "military_drone_printer"
         {
             scene = {},
 			scale = {
-				scale = 0.55
+				scale = 0.6
 			},
             render = {
                 mesh        = "data/model/tank_mech_01.nmd:tank_mech_body_01#02",
