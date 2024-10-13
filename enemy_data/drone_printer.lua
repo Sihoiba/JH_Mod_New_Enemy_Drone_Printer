@@ -22,7 +22,7 @@ function drone_print(self, print_max, print_delay)
         world:play_sound( "armor_shard", self )
         local c = world:get_level():drop_coord(world:get_position( self ))
         if c then
-            nova.log(tostring(self).." got spawn coord x:"..tostring(c.x)..", y:"..tostring(c.y))
+            nova.log(tostring(self).." got spawn coord x:"..tostring(c.x)..", y:"..tostring(c.y).." drone printer at x:"..tostring(world:get_position( self ).x)..", y:"..tostring(world:get_position( self ).y))
             local s = world:get_level():add_entity( self.data.print_id, c, nil )
             s.data.parent = self
             if self.flags.data[ EF_IFF ] == true then
@@ -120,7 +120,7 @@ register_blueprint "buff_targeted3"
 register_blueprint "drone_target_laser"
 {
     attributes = {
-        damage = 10,
+        damage = 2,
         shots = 1,
         min_distance = 4,
         opt_distance = 6,
@@ -147,7 +147,7 @@ register_blueprint "drone_target_laser"
 register_blueprint "drone_target_laser2"
 {
     attributes = {
-        damage = 10,
+        damage = 2,
         shots = 1,
         min_distance = 4,
         opt_distance = 6,
@@ -174,7 +174,7 @@ register_blueprint "drone_target_laser2"
 register_blueprint "drone_target_laser3"
 {
     attributes = {
-        damage = 10,
+        damage = 2,
         shots = 1,
         min_distance = 4,
         opt_distance = 6,
