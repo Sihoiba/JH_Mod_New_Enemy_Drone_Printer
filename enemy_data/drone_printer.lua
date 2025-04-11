@@ -120,7 +120,7 @@ register_blueprint "buff_targeted3"
 register_blueprint "drone_target_laser"
 {
     attributes = {
-        damage = 2,
+        damage = 0,
         shots = 1,
         min_distance = 4,
         opt_distance = 6,
@@ -134,20 +134,23 @@ register_blueprint "drone_target_laser"
         fire_sound = "energy2_shot",
     },
     callbacks = {
-        on_damage = [[
-            function ( weapon, who, amount, source )
-                if who and who.data and who.data.is_player then
-                    world:add_buff( who, "buff_targeted", 200 )
+        on_post_command = [[
+            function ( self, actor, cmt, weapon, time )
+                if time <= 1 then return end
+                if cmt == COMMAND_USE then
+                    if weapon == self and weapon:parent() == actor and actor.target.entity == world:get_player() then
+                        world:add_buff( world:get_player(), "buff_targeted", 200 )
+                    end
                 end
             end
         ]],
-    },
+    }
 }
 
 register_blueprint "drone_target_laser2"
 {
     attributes = {
-        damage = 2,
+        damage = 0,
         shots = 1,
         min_distance = 4,
         opt_distance = 6,
@@ -161,20 +164,23 @@ register_blueprint "drone_target_laser2"
         fire_sound = "energy2_shot",
     },
     callbacks = {
-        on_damage = [[
-            function ( weapon, who, amount, source )
-                if who and who.data and who.data.is_player then
-                    world:add_buff( who, "buff_targeted2", 200 )
+        on_post_command = [[
+            function ( self, actor, cmt, weapon, time )
+                if time <= 1 then return end
+                if cmt == COMMAND_USE then
+                    if weapon == self and weapon:parent() == actor and actor.target.entity == world:get_player() then
+                        world:add_buff( world:get_player(), "buff_targeted2", 200 )
+                    end
                 end
             end
         ]],
-    },
+    }
 }
 
 register_blueprint "drone_target_laser3"
 {
     attributes = {
-        damage = 2,
+        damage = 0,
         shots = 1,
         min_distance = 4,
         opt_distance = 6,
@@ -188,14 +194,17 @@ register_blueprint "drone_target_laser3"
         fire_sound = "energy2_shot",
     },
     callbacks = {
-        on_damage = [[
-            function ( weapon, who, amount, source )
-                if who and who.data and who.data.is_player then
-                    world:add_buff( who, "buff_targeted3", 200 )
+        on_post_command = [[
+            function ( self, actor, cmt, weapon, time )
+                if time <= 1 then return end
+                if cmt == COMMAND_USE then
+                    if weapon == self and weapon:parent() == actor and actor.target.entity == world:get_player() then
+                        world:add_buff( world:get_player(), "buff_targeted3", 200 )
+                    end
                 end
             end
         ]],
-    },
+    }
 }
 
 register_blueprint "printed_drone"
@@ -537,12 +546,12 @@ register_blueprint "combat_drone_printer"
         ]=],
         on_noise    = "aitk.on_noise",
         on_die = [=[
-        function( self, killer, current, weapon )
-            if weapon and weapon.weapon and weapon.weapon.type == world:hash("melee") then return end
-            local w = world:create_entity( "drone_printer_self_destruct" )
-            world:attach( self, w )
-            world:get_level():fire( self, world:get_position( self ), w )
-        end
+            function( self, killer, current, weapon )
+                if weapon and weapon.weapon and weapon.weapon.type == world:hash("melee") then return end
+                local w = world:create_entity( "drone_printer_self_destruct" )
+                world:attach( self, w )
+                world:get_level():fire( self, world:get_position( self ), w )
+            end
         ]=],
         on_activate = [=[
             function( self, who, level, param )
@@ -563,7 +572,7 @@ register_blueprint "military_drone_printer"
     blueprint = "bot",
     lists = {
         group = "being",
-        -- { keywords = { "test" }, weight = 150 },
+        { keywords = { "test2" }, weight = 150 },
         {  keywords = { "io", "beyond", "bot", "robotic", "civilian" }, weight = 50, dmin = 16, dmax = 57, },
     },
     flags = { EF_NOMOVE, EF_NOFLY, EF_TARGETABLE, EF_ALIVE, EF_ACTION, EF_BUMPACTION, },
@@ -635,12 +644,12 @@ register_blueprint "military_drone_printer"
         ]=],
         on_noise    = "aitk.on_noise",
         on_die = [=[
-        function( self, killer, current, weapon )
-            if weapon and weapon.weapon and weapon.weapon.type == world:hash("melee") then return end
-            local w = world:create_entity( "drone_printer_self_destruct" )
-            world:attach( self, w )
-            world:get_level():fire( self, world:get_position( self ), w )
-        end
+            function( self, killer, current, weapon )
+                if weapon and weapon.weapon and weapon.weapon.type == world:hash("melee") then return end
+                local w = world:create_entity( "drone_printer_self_destruct" )
+                world:attach( self, w )
+                world:get_level():fire( self, world:get_position( self ), w )
+            end
         ]=],
         on_activate = [=[
             function( self, who, level, param )
