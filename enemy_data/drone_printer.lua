@@ -407,7 +407,8 @@ register_blueprint "drone_printer"
         print_id = "printed_drone",
         print_count = 0,
         print_max = 6,
-        print_delay = 0;
+        print_delay = 0,
+        branch_effect_disabled = 0,
     },
     attributes = {
         evasion = -20,
@@ -434,7 +435,7 @@ register_blueprint "drone_printer"
                 self:attach( "terminal_return" )
                 self:attach( "ammo_9mm", { stack = { amount = 30 } } )
             end
-            ]=],
+        ]=],
         on_load = [=[
             function ( self )
                 world:get_level():rotate_towards( self, world:get_player() )
@@ -442,6 +443,26 @@ register_blueprint "drone_printer"
         ]=],
         on_action   = [=[
             function( self )
+                if self.data.branch_effect_disabled == 0 then
+                    local player = world:get_player()
+                    local v_runtime = player:child( "valhalla_shutdown_runtime" )
+                    if v_runtime then
+                        nova.log("player has valhalla runtime")
+                        self.data.branch_effect_disabled = 1
+                        if v_runtime.attributes.tier > 1 then
+                            aitk.convert( self, player, not self:flag( EF_NOCORPSE ) )
+                        else
+                            aitk.disable( self, player )
+                        end
+
+                    end
+                    local m_runtime = player:child( "mimir_shutdown_runtime" )
+                    if m_runtime then
+                        nova.log("player has mimir runtime")
+                        self.data.branch_effect_disabled = 1
+                        aitk.disable( self, player )
+                    end
+                end
                 aitk.standard_ai( self )
                 nova.log( tostring(self).."is trying to print drone "..tostring(self.data.print_count).." of "..tostring(self.data.print_max) )
                 drone_print( self, 3, 3 )
