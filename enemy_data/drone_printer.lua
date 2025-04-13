@@ -55,8 +55,8 @@ register_blueprint "buff_targeted"
 {
     flags = { EF_NOPICKUP },
     text = {
-        name    = "Target Painted",
-        desc    = "Reduces dodge by 10%",
+        name    = "MARKED",
+        desc    = "Reduces dodge by 10%, printed drones will hunt you",
     },
     callbacks = {
         on_die = [[
@@ -77,8 +77,8 @@ register_blueprint "buff_targeted2"
 {
     flags = { EF_NOPICKUP },
     text = {
-        name    = "Target Painted",
-        desc    = "Reduces dodge by 15%",
+        name    = "MARKED",
+        desc    = "Reduces dodge by 15%, printed combat drones will hunt you",
     },
     callbacks = {
         on_die = [[
@@ -99,8 +99,8 @@ register_blueprint "buff_targeted3"
 {
     flags = { EF_NOPICKUP },
     text = {
-        name    = "Target Painted",
-        desc    = "Reduces dodge by 20%",
+        name    = "MARKED",
+        desc    = "Reduces dodge by 20%, printed military drones will hunt you",
     },
     callbacks = {
         on_die = [[
@@ -122,7 +122,7 @@ register_blueprint "drone_target_laser"
     attributes = {
         damage = 0,
         shots = 1,
-        min_distance = 4,
+        min_distance = 2,
         opt_distance = 6,
         max_distance = 8,
     },
@@ -152,7 +152,7 @@ register_blueprint "drone_target_laser2"
     attributes = {
         damage = 0,
         shots = 1,
-        min_distance = 4,
+        min_distance = 2,
         opt_distance = 6,
         max_distance = 8,
     },
@@ -182,7 +182,7 @@ register_blueprint "drone_target_laser3"
     attributes = {
         damage = 0,
         shots = 1,
-        min_distance = 4,
+        min_distance = 2,
         opt_distance = 6,
         max_distance = 8,
     },
@@ -253,6 +253,16 @@ register_blueprint "printed_drone"
                 end
             end
         ]=],
+        on_timer = [=[
+            function ( self, first )
+                if first then return 50 end
+                local player = world:get_player()
+                if player and player:child("buff_targeted") and (self.data.ai.state ~= "find" or self.data.ai.state ~= "hunt") and not self:child( "friendly" ) then
+                    self.target.entity = world:get_player()
+                    self.data.ai.state = "find"
+                end
+            end
+        ]=],
     },
     attributes = {
         experience_value = 0,
@@ -300,6 +310,16 @@ register_blueprint "printed_combat_drone"
                 self.data.parent.data.print_count = self.data.parent.data.print_count - 1
             end
         ]=],
+        on_timer = [=[
+            function ( self, first )
+                if first then return 50 end
+                local player = world:get_player()
+                if player and player:child("buff_targeted2") and (self.data.ai.state ~= "find" or self.data.ai.state ~= "hunt") and not self:child( "friendly" ) then
+                    self.target.entity = world:get_player()
+                    self.data.ai.state = "find"
+                end
+            end
+        ]=],
     },
     attributes = {
         experience_value = 0,
@@ -345,6 +365,16 @@ register_blueprint "printed_military_drone"
                 world:play_sound( "explosion", self, 0.3 )
                 ui:spawn_fx( nil, "fx_drone_explode", nil, world:get_position( self ) )
                 self.data.parent.data.print_count = self.data.parent.data.print_count - 1
+            end
+        ]=],
+        on_timer = [=[
+            function ( self, first )
+                if first then return 50 end
+                local player = world:get_player()
+                if player and player:child("buff_targeted3") and (self.data.ai.state ~= "find" or self.data.ai.state ~= "hunt") and not self:child( "friendly" ) then
+                    self.target.entity = player
+                    self.data.ai.state = "find"
+                end
             end
         ]=],
     },
@@ -400,7 +430,7 @@ register_blueprint "drone_printer"
             alert     = 1,
             group     = "security",
             state     = "idle",
-            melee     = 1,
+            melee     = 0,
             range     = 6,
             cover     = true,
         },
@@ -488,6 +518,16 @@ register_blueprint "drone_printer"
                 end
             end
         ]=],
+        on_pre_command = [=[
+            function ( self, actor, cmt )
+                if self.target and self.target.entity and world:get_level():distance( self, self.target.entity ) < 2 then
+                    self.data.ai.melee = 1
+                else
+                    self.data.ai.melee = 0
+                end
+                return 0
+            end
+        ]=],
     },
 }
 
@@ -519,7 +559,7 @@ register_blueprint "combat_drone_printer"
             alert     = 1,
             group     = "security",
             state     = "idle",
-            melee     = 1,
+            melee     = 0,
             range     = 6,
             cover     = true,
         },
@@ -585,6 +625,16 @@ register_blueprint "combat_drone_printer"
                 end
             end
         ]=],
+        on_pre_command = [=[
+            function ( self, actor, cmt )
+                if self.target and self.target.entity and world:get_level():distance( self, self.target.entity ) < 2 then
+                    self.data.ai.melee = 1
+                else
+                    self.data.ai.melee = 0
+                end
+                return 0
+            end
+        ]=],
     },
 }
 
@@ -616,7 +666,7 @@ register_blueprint "military_drone_printer"
             alert     = 1,
             group     = "security",
             state     = "idle",
-            melee     = 1,
+            melee     = 0,
             range     = 6,
             cover     = true,
         },
@@ -681,6 +731,16 @@ register_blueprint "military_drone_printer"
                 else
                     return 0
                 end
+            end
+        ]=],
+        on_pre_command = [=[
+            function ( self, actor, cmt )
+                if self.target and self.target.entity and world:get_level():distance( self, self.target.entity ) < 2 then
+                    self.data.ai.melee = 1
+                else
+                    self.data.ai.melee = 0
+                end
+                return 0
             end
         ]=],
     },
